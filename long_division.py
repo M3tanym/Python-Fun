@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Long Division with repeating decimals
+# https://en.wikipedia.org/wiki/Long_division
+# Special thanks to Max R and Josette G 
+
 import sys
 
 def long_division(numerator, denominator):
