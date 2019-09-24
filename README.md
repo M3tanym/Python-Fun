@@ -1,2 +1,2 @@
-# python_fun
-Assorted Python scripts that do cool things
+# Assorted Python Scripts
+### some Python programs that do cool things
