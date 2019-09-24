@@ -7,6 +7,7 @@
 import sys
 
 def seen_before(numerators, n):
+    ''' check if this numerator has been seen before '''
     for i in range(len(numerators)):
         # check each previous numerator, which are ordered backwards for convenience
         if numerators[i] == n:
