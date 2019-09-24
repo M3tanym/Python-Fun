@@ -76,7 +76,7 @@ def long_division(numerator, denominator, show_math):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print('Usage: ./' + sys.argv[0] + ' numerator denominator [(v)erbose]')
+        print('Usage: ' + sys.argv[0] + ' numerator denominator [(v)erbose]')
     else:
         show_math = len(sys.argv) > 3 # if a fourth arg is provided, show the long division
         answer = long_division(int(sys.argv[1]), int(sys.argv[2]), show_math)
