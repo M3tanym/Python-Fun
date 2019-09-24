@@ -6,6 +6,15 @@
 
 import sys
 
+def seen_before(numerators, n):
+    for i in range(len(numerators)):
+        # check each previous numerator, which are ordered backwards for convenience
+        if numerators[i] == n:
+            # we found a repeated numerator! This means that the last "i + 1" digits will be repeated
+            i += 1 # off-by-1 because indexed at 0
+            return i
+    return -1
+
 def long_division(numerator, denominator, show_math):
     ''' Return a string with the repeating decimal notation for this division '''
     # the return string, ie, the top of the long division bar
@@ -17,60 +26,72 @@ def long_division(numerator, denominator, show_math):
     # a flag to indicate if we're still running through the division
     done = False
 
+    # check for a negative answer and normalize if needed
+    if numerator < 0 or denominator < 0:
+       if numerator / denominator < 0:
+           answer += '-'
+       numerator = abs(numerator)
+       denominator = abs(denominator)
+
     # each iteration is one "level" in the long division
-    while not done:
+    while True:
+        # debug if desired
+        if show_math:
+            print('Numerator: ' + str(numerator))
+            print('Denominator: ' + str(denominator))
+            print('Numerators Seen: ' + str(seen_numerators))
+
+        # flag in case a trailing 0 needs to be in the repating segment
+        extra_zero = False
         # if the numerator doesn't go into the denominator
-        if numerator < denominator:
-            # "bring down" a 0, ie, multiply by 10
-            numerator *= 10
+        if denominator > numerator:
             # add a 0 to the answer
             answer += '0'
-            # check if this was the first digit/number, if so, add a "." and clear the flag
+            extra_zero = True
+            # add a "." if necessary
             if firstPlace:
                 answer += '.'
                 firstPlace = False
+            # "bring down" a 0
+            numerator *= 10
 
+        # check for previously seen numerators (repeating decimals)
+        i = seen_before(seen_numerators, numerator)
+        if i != -1:
+            if show_math:
+                print('Repeat detected!')
+            # offset the index by 1 if there's an extra zero to include
+            if extra_zero:
+                i += 1
+            answer = answer[:-i] + '(' + answer[-i:] + ')'
+            # answer = [the non-repeating part] + ( + [the repeating part] + )
+            break
         # mark that we've seen this numerator
         seen_numerators.insert(0, numerator)
 
         # get the next digit with integer division
         digit = numerator // denominator
-        # find the remainder with modulus
-        remainder = numerator % denominator
-        # "bring down" a 0
-        new_numerator = remainder * 10
-
-        # add the digit to the string and add a "." if necessary
+        # find the remainder (new numerator), could also be done with mod
+        numerator = numerator - (denominator * digit)
+        # add the digit to the string
         answer += str(digit)
-        if firstPlace:
+        # add a "." if necessary (only if there are more decimals)
+        if firstPlace and numerator != 0:
             answer += '.'
             firstPlace = False
+        # "bring down" a 0
+        numerator *= 10
 
+        # if the numerator is 0, we're done!
+        if numerator == 0:
+            break
+
+        # print debug info if desired
         if show_math:
-            print('Numerator: ' + str(numerator))
-            print('Denominator: ' + str(denominator))
-            print('Next Digit: ' + str(digit))
-            print('New Numerator: ' + str(new_numerator))
-            print('Numerators Seen: ' + str(seen_numerators))
+            print('Added Digit: ' + str(digit))
+            print('Answer is currently: ' + answer)
             print('')
 
-        # if the next numerator is 0, we're done!
-        if new_numerator == 0:
-            break
-        # check for repeating decimals
-        for i in range(len(seen_numerators)):
-            # check each see numerator, which are ordered backwards for convenience
-            if seen_numerators[i] == new_numerator:
-                # we found a repeated numerator! This means that the last "i + 1" digits will be repeated
-                # insert parentheses accordingly (to represent the repeating digits)
-                i += 1 # off-by-1 because indexed at 0
-                answer = answer[:-i] + '(' + answer[-i:] + ')'
-                # answer = [the non-repeating part] + ( + [the repeating part] + )
-                done = True
-                # flag to exit the loop
-                break
-        # prepare for the next iteration by setting the numerator
-        numerator = new_numerator
     # after the loop, return the answer string
     return answer
 
