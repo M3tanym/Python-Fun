@@ -2,11 +2,11 @@
 
 # Long Division with repeating decimals
 # https://en.wikipedia.org/wiki/Long_division
-# Special thanks to Max R and Josette G 
+# Special thanks to Max R and Josette G
 
 import sys
 
-def long_division(numerator, denominator):
+def long_division(numerator, denominator, show_math):
     ''' Return a string with the repeating decimal notation for this division '''
     # the return string, ie, the top of the long division bar
     answer = str(numerator) + '/' + str(denominator) + ' = '
@@ -16,7 +16,7 @@ def long_division(numerator, denominator):
     firstPlace = True
     # a flag to indicate if we're still running through the division
     done = False
-    
+
     # each iteration is one "level" in the long division
     while not done:
         # if the numerator doesn't go into the denominator
@@ -33,10 +33,6 @@ def long_division(numerator, denominator):
         # mark that we've seen this numerator
         seen_numerators.insert(0, numerator)
 
-        #print('seen_numerators seen: ' + str(seen_numerators))
-        #print('Numerator: ' + str(numerator))
-        #print('Denominator: ' + str(denominator))
-
         # get the next digit with integer division
         digit = numerator // denominator
         # find the remainder with modulus
@@ -50,9 +46,13 @@ def long_division(numerator, denominator):
             answer += '.'
             firstPlace = False
 
-        #print('Next Digit: ' + str(digit))
-        #print('New Numerator: ' + str(new_numerator))
-        #print('')
+        if show_math:
+            print('Numerator: ' + str(numerator))
+            print('Denominator: ' + str(denominator))
+            print('Next Digit: ' + str(digit))
+            print('New Numerator: ' + str(new_numerator))
+            print('Numerators Seen: ' + str(seen_numerators))
+            print('')
 
         # if the next numerator is 0, we're done!
         if new_numerator == 0:
@@ -61,11 +61,11 @@ def long_division(numerator, denominator):
         for i in range(len(seen_numerators)):
             # check each see numerator, which are ordered backwards for convenience
             if seen_numerators[i] == new_numerator:
-                # we found a repeated numerator! This means that the last "i" digits will be repeated
-                # insert parentheses accordingly
+                # we found a repeated numerator! This means that the last "i + 1" digits will be repeated
+                # insert parentheses accordingly (to represent the repeating digits)
                 i += 1 # off-by-1 because indexed at 0
                 answer = answer[:-i] + '(' + answer[-i:] + ')'
-                # ans = [the non-repeating part] + ( + [the repeating part] + )
+                # answer = [the non-repeating part] + ( + [the repeating part] + )
                 done = True
                 # flag to exit the loop
                 break
@@ -75,8 +75,9 @@ def long_division(numerator, denominator):
     return answer
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print('Usage: ./' + sys.argv[0] + ' [numerator] [denominator]')
+    if len(sys.argv) < 3:
+        print('Usage: ./' + sys.argv[0] + ' numerator denominator [(v)erbose]')
     else:
-        answer = long_division(int(sys.argv[1]), int(sys.argv[2]))
+        show_math = len(sys.argv) > 3 # if a fourth arg is provided, show the long division
+        answer = long_division(int(sys.argv[1]), int(sys.argv[2]), show_math)
         print(answer)
